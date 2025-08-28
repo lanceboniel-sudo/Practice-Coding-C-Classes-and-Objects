@@ -1,61 +1,67 @@
 using System;
 
-namespace PaymentSystem
+// Define the interface
+interface IPayment
 {
-    // Step 1: Create an interface
-    interface IPayment
+    double ProcessPayment(double amount);
+}
+
+// Implement CreditCardPayment
+class CreditCardPayment : IPayment
+{
+    public double ProcessPayment(double amount)
     {
-        double ProcessPayment(double amount);
+        // Add 2% service charge
+        double finalAmount = amount + (amount * 0.02);
+        return finalAmount;
     }
+}
 
-    // Step 2: Implement CreditCardPayment with 2% service charge
-    class CreditCardPayment : IPayment
+// Implement PayPalPayment
+class PayPalPayment : IPayment
+{
+    public double ProcessPayment(double amount)
     {
-        public double ProcessPayment(double amount)
-        {
-            double serviceCharge = amount * 0.02;
-            return amount + serviceCharge;
-        }
+        // Add fixed $5 fee
+        double finalAmount = amount + 5;
+        return finalAmount;
     }
+}
 
-    // Step 3: Implement PayPalPayment with $5 fixed fee
-    class PayPalPayment : IPayment
+class Program
+{
+    static void Main()
     {
-        public double ProcessPayment(double amount)
+        Console.WriteLine("Choose a payment method:");
+        Console.WriteLine("1. Credit Card");
+        Console.WriteLine("2. PayPal");
+        Console.Write("Enter your choice (1 or 2): ");
+        string choice = Console.ReadLine();
+
+        IPayment paymentMethod;
+
+        if (choice == "1")
         {
-            double fixedFee = 5.0;
-            return amount + fixedFee;
+            paymentMethod = new CreditCardPayment();
         }
-    }
-
-    class Program
-    {
-        static void Main(string[] args)
+        else if (choice == "2")
         {
-            Console.WriteLine("Choose Payment Method (1 = Credit Card, 2 = PayPal):");
-            string choice = Console.ReadLine();
-
-            Console.Write("Enter amount: ");
-            double amount = Convert.ToDouble(Console.ReadLine());
-
-            IPayment payment;
-
-            if (choice == "1")
-            {
-                payment = new CreditCardPayment();
-            }
-            else if (choice == "2")
-            {
-                payment = new PayPalPayment();
-            }
-            else
-            {
-                Console.WriteLine("Invalid choice.");
-                return;
-            }
-
-            double finalAmount = payment.ProcessPayment(amount);
-            Console.WriteLine($"Final amount to be paid: ${finalAmount:F2}");
+            paymentMethod = new PayPalPayment();
         }
+        else
+        {
+            Console.WriteLine("Invalid choice!");
+            return;
+        }
+
+        Console.Write("Enter the amount: ");
+        double amount = double.Parse(Console.ReadLine());
+
+        double finalAmount = paymentMethod.ProcessPayment(amount);
+
+        Console.WriteLine($"\nFinal amount to be paid: ${finalAmount:F2}");
+
+        Console.WriteLine("\nPress any key to exit...");
+        Console.ReadKey();
     }
 }
